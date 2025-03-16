@@ -1,6 +1,6 @@
-# HN Jobs & Candidates Matching System
+# Ives - HN Jobs & Candidates Matching System
 
-This system scrapes Hacker News "Who is hiring" and "Who wants to be hired" threads, extracts structured data, and uses semantic search to match candidates with relevant jobs.
+A system that scrapes Hacker News "Who is hiring" and "Who wants to be hired" threads, extracts structured data, and uses semantic search to match candidates with relevant jobs.
 
 ## Features
 
@@ -10,7 +10,7 @@ This system scrapes Hacker News "Who is hiring" and "Who wants to be hired" thre
 - Performs basic rule-based matching using location, remote preferences, and technologies
 - Generates vector embeddings for semantic search
 - Stores data in Qdrant vector database for similarity searches
-- Provides an interactive interface for searching and matching
+- Provides an interactive Streamlit dashboard for visualizing matches
 
 ## Setup
 
@@ -24,108 +24,74 @@ This system scrapes Hacker News "Who is hiring" and "Who wants to be hired" thre
 
 1. Clone this repository:
 ```bash
-git clone https://github.com/yourusername/hn-job-matcher.git
-cd hn-job-matcher
+git clone https://github.com/pierretd/ives.git
+cd ives
 ```
 
-2. Install dependencies:
+2. Create a virtual environment (recommended):
+```bash
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+```
+
+3. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Set up your OpenAI API key:
-```bash
-export OPENAI_API_KEY="your-api-key-here"
+4. Create a `.env` file with your API keys:
 ```
-
-4. Configure Qdrant:
-
-   **Option 1: Local Qdrant Instance**
-   ```bash
-   export QDRANT_URL="localhost"
-   export QDRANT_PORT=6333
-   ```
-   
-   **Option 2: Qdrant Cloud**
-   ```bash
-   export QDRANT_URL="your-cluster-url.cloud.qdrant.io"
-   export QDRANT_API_KEY="your-qdrant-api-key"
-   ```
-
-   Alternatively, create a `.env` file with these variables.
+OPENAI_API_KEY=your-openai-api-key
+QDRANT_URL=your-qdrant-url
+QDRANT_API_KEY=your-qdrant-api-key  # Only needed for Qdrant Cloud
+```
 
 ## Usage
 
-The easiest way to use the system is through the wrapper script:
+### Data Collection and Processing
+
+1. Extract candidates from "Who wants to be hired" threads:
+```bash
+python extract_hn_candidates.py
+```
+
+2. Extract job postings from "Who is hiring" threads:
+```bash
+python extract_hn_jobs.py
+```
+
+3. Run rule-based matching:
+```bash
+python job_matcher.py
+```
+
+4. Generate embeddings and store in Qdrant:
+```bash
+python upsert_to_qdrant.py
+```
+
+5. Run semantic search to find matches:
+```bash
+python vector_search.py
+```
+
+### Using the Streamlit Dashboard
+
+View the matching results in an interactive dashboard:
+
+```bash
+streamlit run streamlit_app.py
+```
+
+### Using the Interactive CLI
+
+You can also use the wrapper script for a command-line interface:
+
 ```bash
 python run_job_matcher.py
 ```
 
 This will provide an interactive menu with all available options.
-
-Alternatively, you can run individual scripts:
-
-### 1. Data Extraction
-
-Extract candidate information from "Who wants to be hired" threads:
-```bash
-python extract_hn_candidates.py
-```
-
-Extract job postings from "Who is hiring" threads:
-```bash
-python extract_hn_jobs.py
-```
-
-### 2. Basic Matching
-
-Run the rule-based matcher to find potential matches between candidates and jobs:
-```bash
-python job_matcher.py
-```
-
-This will:
-- Extract data from both threads
-- Generate summaries for each candidate and job
-- Calculate match scores based on location, remote status, and technology overlap
-- Print the results and save them to `job_matching_results.json`
-
-### 3. Semantic Search with Qdrant
-
-First, generate embeddings and upsert data to Qdrant:
-```bash
-python upsert_to_qdrant.py
-```
-
-Then, perform vector searches for semantic matching:
-```bash
-python vector_search.py
-```
-
-This interactive tool provides several options:
-1. Find matches for all candidates
-2. Find matches for all jobs
-3. Search by text query
-4. Exit
-
-Results will be saved to `vector_candidate_matches.json` and `vector_job_matches.json`.
-
-## Qdrant Cloud Setup
-
-[Qdrant Cloud](https://cloud.qdrant.io/) is a fully managed vector database service that eliminates the need to set up and maintain your own Qdrant server.
-
-To use Qdrant Cloud with this system:
-
-1. Create an account at [cloud.qdrant.io](https://cloud.qdrant.io/)
-2. Create a new cluster (free tier available)
-3. Get your cluster URL and API key
-4. Add them to your `.env` file:
-   ```
-   QDRANT_URL=https://your-cluster-id.region.cloud.qdrant.io
-   QDRANT_API_KEY=your-api-key
-   ```
-
-The system will automatically detect that you're using Qdrant Cloud and connect accordingly.
 
 ## How Matching Works
 
@@ -147,20 +113,18 @@ The semantic matching uses OpenAI embeddings to find similar candidates and jobs
 
 This often produces better matches than the rule-based approach, as it can understand related technologies and roles even when exact keywords don't match.
 
-## Customization
+## Project Structure
 
-You can customize the system by:
-- Modifying the regex patterns in extraction scripts
-- Adjusting the matching weights in `job_matcher.py`
-- Changing the minimum match score
-- Using different embedding models
+- `extract_hn_candidates.py` - Extracts candidate data from HN threads
+- `extract_hn_jobs.py` - Extracts job posting data from HN threads
+- `job_matcher.py` - Performs rule-based matching
+- `vector_search.py` - Performs semantic search using Qdrant
+- `upsert_to_qdrant.py` - Generates embeddings and uploads to Qdrant
+- `streamlit_app.py` - Interactive dashboard for visualizing matches
+- `run_job_matcher.py` - CLI wrapper for all functionality
+- `explore_qdrant.py` - Utility for exploring data in Qdrant
+- `get_data.py` - Utility functions for data collection
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- Hacker News for hosting the "Who is hiring" and "Who wants to be hired" threads
-- OpenAI for the embedding model
-- Qdrant for the vector database 
+MIT License 
