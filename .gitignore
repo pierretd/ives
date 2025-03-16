@@ -1,0 +1,35 @@
+# Environment variables
+.env
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Large data files
+job_matching_results.json
+
+# Logs
+*.log
+upsert_output.txt
+
+# Jupyter Notebook
+.ipynb_checkpoints 
